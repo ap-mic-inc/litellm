@@ -1645,6 +1645,7 @@ class AzureChatCompletion(BaseLLM):
         azure_ad_token: Optional[str] = None,
         aspeech: Optional[bool] = None,
         client=None,
+        **kwargs,
     ) -> HttpxBinaryResponseContent:
 
         max_retries = optional_params.pop("max_retries", 2)
@@ -1662,6 +1663,7 @@ class AzureChatCompletion(BaseLLM):
                 max_retries=max_retries,
                 timeout=timeout,
                 client=client,
+                **kwargs,
             )  # type: ignore
 
         azure_client: AzureOpenAI = self._get_sync_azure_client(
@@ -1696,6 +1698,8 @@ class AzureChatCompletion(BaseLLM):
         azure_ad_token: Optional[str],
         max_retries: int,
         timeout: Union[float, httpx.Timeout],
+        stream: Optional[bool] = None,
+        stream_options: Optional[dict] = None,
         client=None,
     ) -> HttpxBinaryResponseContent:
 
@@ -1711,12 +1715,20 @@ class AzureChatCompletion(BaseLLM):
             client_type="async",
         )  # type: ignore
 
-        response = await azure_client.audio.speech.create(
-            model=model,
-            voice=voice,  # type: ignore
-            input=input,
-            **optional_params,
-        )
+        if stream:
+            response = await azure_client.audio.speech.with_streaming_response.create(
+                model=model,
+                voice=voice,  # type: ignore
+                input=input,
+                **optional_params,
+            )
+        else:
+            response = await azure_client.audio.speech.create(
+                model=model,
+                voice=voice,  # type: ignore
+                input=input,
+                **optional_params,
+            )
 
         return response
 

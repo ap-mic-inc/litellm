@@ -4547,6 +4547,8 @@ def speech(
     headers: Optional[dict] = None,
     custom_llm_provider: Optional[str] = None,
     aspeech: Optional[bool] = None,
+    stream: Optional[bool] = None,
+    stream_options: Optional[dict] = None,
     **kwargs,
 ) -> HttpxBinaryResponseContent:
 
@@ -4647,6 +4649,8 @@ def speech(
             timeout=timeout,
             client=client,  # pass AsyncOpenAI, OpenAI client
             aspeech=aspeech,
+            stream=stream,
+            stream_options=stream_options,
         )
 
     if response is None:
